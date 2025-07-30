@@ -578,13 +578,13 @@
         display: none;
         position: fixed;
         top: 0;
-        right: 0;
+        left: 0;
         width: 70%;
         height: 100%;
         background: white;
         z-index: 1000;
-        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-        transform: translateX(100%);
+        box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+        transform: translateX(-100%);
         transition: transform 0.3s ease;
         padding: 2rem;
         overflow-y: auto;
@@ -655,6 +655,98 @@
         display: block;
       }
 
+      /* Welcome message style */
+      .welcome-message {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        animation: fadeIn 0.5s ease-out;
+      }
+      
+      .welcome-message h2 {
+        color: white;
+        margin-bottom: 1rem;
+        font-size: 2rem;
+      }
+      
+      .welcome-message p {
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+        max-width: 500px;
+      }
+      
+      .welcome-form {
+        width: 100%;
+        max-width: 400px;
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        animation: slideUp 0.5s ease-out;
+      }
+      
+      .avatar-options {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin: 1rem 0 2rem;
+        flex-wrap: wrap;
+      }
+      
+      .avatar-option {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 3px solid transparent;
+        transition: all 0.3s ease;
+        background: white;
+        padding: 5px;
+      }
+      
+      .avatar-option.selected {
+        border-color: var(--accent);
+        transform: scale(1.1);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      }
+      
+      .avatar-option img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      /* Header user display */
+      .user-display {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-left: auto;
+      }
+      
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid var(--primary);
+      }
+      
+      .user-name {
+        font-weight: 600;
+        color: var(--dark);
+      }
+
       @media (max-width: 768px) {
         .materials-grid {
           grid-template-columns: 1fr;
@@ -721,16 +813,75 @@
           transform: translateY(0);
         }
       }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeOut {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+        }
+      }
     </style>
   </head>
   <body>
+    <!-- Welcome Message -->
+    <div class="welcome-message" id="welcome-message">
+      <h2>Welcome to Your Daily Planner!</h2>
+      <p>Let's personalize your experience. Please tell us your name and choose an avatar to get started.</p>
+      
+      <form class="welcome-form" id="welcome-form">
+        <div class="form-group">
+          <label for="user-name" style="color: var(--dark); text-align: left;">Your Name</label>
+          <input type="text" id="user-name" placeholder="Enter your name" required style="margin-top: 0.5rem;">
+        </div>
+        
+        <div style="margin: 1.5rem 0;">
+          <label style="color: var(--dark); display: block; text-align: left; margin-bottom: 0.5rem;">Choose Avatar</label>
+          <div class="avatar-options">
+            <div class="avatar-option" data-avatar="1">
+              <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=1&radius=50&backgroundType=gradientLinear" alt="Avatar 1">
+            </div>
+            <div class="avatar-option" data-avatar="2">
+              <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=2&radius=50&backgroundType=gradientLinear" alt="Avatar 2">
+            </div>
+            <div class="avatar-option" data-avatar="3">
+              <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=3&radius=50&backgroundType=gradientLinear" alt="Avatar 3">
+            </div>
+            <div class="avatar-option" data-avatar="4">
+              <img src="https://api.dicebear.com/7.x/bottts-neutral/svg?seed=4&radius=50&backgroundType=gradientLinear" alt="Avatar 4">
+            </div>
+          </div>
+        </div>
+        
+        <button type="submit" class="btn" style="width: 100%; padding: 1rem; font-size: 1.1rem;">
+          Start Planning →
+        </button>
+      </form>
+    </div>
+
     <div class="container">
       <header>
+        <button class="menu-btn" id="menu-btn">☰</button>
         <div>
           <h1>SENTINEL</h1>
           <p class="subtitle">Explore • Plan • Learn • Work • Action • Track</p>
         </div>
-        <button class="menu-btn" id="menu-btn">☰</button>
+        <div class="user-display" id="user-display" style="display:none;">
+          <span class="user-name" id="header-user-name"></span>
+          <img class="user-avatar" id="header-user-avatar" src="">
+        </div>
       </header>
 
       <!-- Mobile Menu -->
@@ -746,13 +897,13 @@
         <button class="tab-btn" data-tab="calendar">Progress Calendar</button>
         
         <div class="profile-section">
-          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" class="profile-image">
-          <div class="profile-name">John Doe</div>
-          <div class="profile-email">john.doe@example.com</div>
+          <img id="profile-avatar" src="" alt="Profile" class="profile-image">
+          <div class="profile-name" id="profile-name"></div>
+          <div class="profile-email">Daily Planner User</div>
         </div>
       </div>
 
-      <!-- Desktop Tabs (hidden on mobile) -->
+      <!-- Desktop Tabs -->
       <div class="tabs">
         <button class="tab-btn active" data-tab="daily">Daily Routine</button>
         <button class="tab-btn" data-tab="health">Health & Wellness</button>
@@ -763,6 +914,7 @@
         <button class="tab-btn" data-tab="calendar">Progress Calendar</button>
       </div>
 
+      <!-- Tab Contents -->
       <div id="daily" class="tab-content active">
         <h2>Daily Schedule</h2>
         <div class="schedule-grid">
@@ -847,14 +999,7 @@
           </div>
         </div>
 
-        <div
-          class="time-card"
-          style="
-            margin-top: 2rem;
-            background: #e3f2fd;
-            border-left-color: var(--info);
-          "
-        >
+        <div class="time-card" style="margin-top: 2rem; background: #e3f2fd; border-left-color: var(--info);">
           <div class="time-range">Sunday/Holidays</div>
           <div class="activity">
             <strong>Projects:</strong> Food Project Complete, Games Hub<br />
@@ -876,7 +1021,6 @@
 
       <div id="health" class="tab-content">
         <h2>Health & Wellness Routine</h2>
-
         <div class="schedule-grid">
           <div class="time-card" data-activity="yoga">
             <button class="complete-btn">✓</button>
@@ -927,7 +1071,6 @@
 
       <div id="materials" class="tab-content">
         <h2>Materials Center</h2>
-
         <div class="materials-grid">
           <div class="material-category">
             <h3>Coding & Technical</h3>
@@ -994,6 +1137,7 @@
               </li>
             </ul>
           </div>
+          
           <div class="material-category">
             <h3>Techinical round preparation</h3>
             <ul class="material-list">
@@ -1009,8 +1153,7 @@
                 <a
                   href=https://www.geeksforgeeks.org/mysql/mysql-tutorial/
                   target="_blank"
-                  >MySql Tutorial</a
-                >
+                  >MySql Tutorial</a>
               </li>
             </ul>
           </div>
@@ -1210,6 +1353,93 @@
     </div>
 
     <script>
+        // Enhanced user profile functionality
+  document.addEventListener("DOMContentLoaded", function() {
+    // Check if user has already set up profile
+    const userName = localStorage.getItem('userName');
+    const userAvatar = localStorage.getItem('userAvatar');
+    
+    if (userName && userAvatar) {
+      // Hide welcome message with animation
+      const welcomeMessage = document.getElementById('welcome-message');
+      welcomeMessage.style.animation = 'fadeOut 0.5s ease-out';
+      setTimeout(() => {
+        welcomeMessage.style.display = 'none';
+      }, 500);
+      
+      // Show user info in header
+      showUserProfile(userName, userAvatar);
+    } else {
+      // Show welcome message
+      document.getElementById('welcome-message').style.display = 'flex';
+      
+      // Avatar selection
+      let selectedAvatar = '';
+      document.querySelectorAll('.avatar-option').forEach(avatar => {
+        avatar.addEventListener('click', function() {
+          document.querySelectorAll('.avatar-option').forEach(a => a.classList.remove('selected'));
+          this.classList.add('selected');
+          selectedAvatar = this.querySelector('img').src;
+        });
+      });
+      
+      // Auto-select first avatar
+      const firstAvatar = document.querySelector('.avatar-option');
+      firstAvatar.classList.add('selected');
+      selectedAvatar = firstAvatar.querySelector('img').src;
+      
+      // Form submission
+      document.getElementById('welcome-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const name = document.getElementById('user-name').value.trim();
+        
+        if (name) {
+          // Save to localStorage
+          localStorage.setItem('userName', name);
+          localStorage.setItem('userAvatar', selectedAvatar);
+          
+          // Hide welcome message with animation
+          const welcomeMessage = document.getElementById('welcome-message');
+          welcomeMessage.style.animation = 'fadeOut 0.5s ease-out';
+          setTimeout(() => {
+            welcomeMessage.style.display = 'none';
+          }, 500);
+          
+          // Show user profile
+          showUserProfile(name, selectedAvatar);
+        }
+      });
+    }
+  });
+
+  function showUserProfile(name, avatar) {
+  // Show user info in header
+  const userDisplay = document.getElementById('user-display');
+  const headerUserName = document.getElementById('header-user-name');
+  const headerUserAvatar = document.getElementById('header-user-avatar');
+  const profileName = document.getElementById('profile-name');
+  const profileAvatar = document.getElementById('profile-avatar');
+
+  // Check if elements exist before trying to modify them
+  if (userDisplay) userDisplay.style.display = 'flex';
+  if (headerUserName) headerUserName.textContent = name;
+  if (headerUserAvatar) headerUserAvatar.src = avatar;
+  if (profileName) profileName.textContent = name;
+  if (profileAvatar) profileAvatar.src = avatar;
+
+  // Add animation to profile display if it exists
+  if (userDisplay) {
+    userDisplay.style.animation = 'fadeIn 0.5s ease-out';
+  }
+}
+
+  // Add to your existing @keyframes
+  
+
+
+  // Rest of your existing JavaScript...
+
+
       document.addEventListener("DOMContentLoaded", function () {
         // Mobile menu functionality
         const menuBtn = document.getElementById('menu-btn');
