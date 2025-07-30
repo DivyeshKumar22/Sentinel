@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Enhanced Daily Planner</title>
+    <style>
+      :root {
+        --primary: #6c5ce7;
+        --secondary: #a29bfe;
+        --accent: #fd79a8;
+        --light: #f8f9fa;
+        --dark: #343a40;
+        --success: #00b894;
+        --info: #0984e3;
+        --warning: #fdcb6e;
+        --danger: #d63031;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        padding: 2rem;
+        color: var(--dark);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 2rem;
+        animation: fadeIn 1s ease-out;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .subtitle {
+        font-size: 1.2rem;
+        color: var(--dark);
+        opacity: 0.8;
+      }
+
+      .tabs {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .tab-btn {
+        padding: 0.8rem 1.5rem;
+        margin: 0 0.5rem;
+        background: white;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--dark);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .tab-btn:after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 3px;
+        background: var(--primary);
+        transition: all 0.3s ease;
+      }
+
+      .tab-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .tab-btn.active {
+        background: var(--primary);
+        color: white;
+      }
+
+      .tab-btn.active:after {
+        width: 100%;
+      }
+
+      .tab-content {
+        display: none;
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 0.5s ease-out;
+        margin-bottom: 2rem;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .schedule-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .time-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        border-left: 4px solid var(--primary);
+        position: relative;
+      }
+
+      .time-card.completed {
+        background: #f0fff4;
+        border-left-color: var(--success);
+      }
+
+      .time-card.completed .complete-btn {
+        background: var(--success);
+        color: white;
+      }
+
+      .time-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .time-range {
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+      }
+
+      .time-card.completed .time-range {
+        color: var(--success);
+      }
+
+      .time-range:before {
+        content: "";
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        background: var(--accent);
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+
+      .time-card.completed .time-range:before {
+        background: var(--success);
+      }
+
+      .activity {
+        color: var(--dark);
+        line-height: 1.6;
+      }
+
+      .complete-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid #ddd;
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .complete-btn:hover {
+        border-color: var(--success);
+      }
+
+      .health-shake {
+        background: linear-gradient(135deg, #fff9c4 0%, #ffecb3 100%);
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-top: 2rem;
+        border-left: 4px solid var(--warning);
+      }
+
+      .health-shake h3 {
+        color: #ff8f00;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+      }
+
+      .health-shake h3:before {
+        content: "🍹";
+        margin-right: 10px;
+      }
+
+      .ingredient-list {
+        columns: 2;
+        column-gap: 2rem;
+      }
+
+      .ingredient {
+        margin-bottom: 0.5rem;
+        padding-left: 1.5rem;
+        position: relative;
+        break-inside: avoid;
+      }
+
+      .ingredient:before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--success);
+      }
+
+      .food-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+      }
+
+      .food-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+      }
+
+      .food-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .food-emoji {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .food-name {
+        font-weight: 600;
+        color: var(--dark);
+      }
+
+      .progress-container {
+        margin-top: 2rem;
+      }
+
+      .progress-title {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+      }
+
+      .progress-bar {
+        height: 10px;
+        background: #e9ecef;
+        border-radius: 5px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        border-radius: 5px;
+        width: 0;
+        transition: width 1s ease-out;
+      }
+
+      /* Notes Section */
+      .notes-container {
+        margin-top: 2rem;
+      }
+
+      .note-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        position: relative;
+      }
+
+      .note-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+      }
+
+      .note-title {
+        font-weight: 600;
+        color: var(--primary);
+      }
+
+      .note-date {
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      .note-content {
+        color: var(--dark);
+        line-height: 1.6;
+      }
+
+      .note-form {
+        margin-top: 2rem;
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+      }
+
+      .form-group input,
+      .form-group textarea,
+      .form-group select {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+      }
+
+      .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
+
+      .btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .btn:hover {
+        background: var(--secondary);
+        transform: translateY(-2px);
+      }
+
+      /* Calendar */
+      .calendar {
+        margin-top: 2rem;
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .calendar-title {
+        font-weight: 600;
+        color: var(--primary);
+      }
+
+      .calendar-nav {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .calendar-nav button {
+        background: var(--primary);
+        color: white;
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+      }
+
+      .calendar-day-header {
+        text-align: center;
+        font-weight: 600;
+        padding: 0.5rem;
+        color: var(--primary);
+      }
+
+      .calendar-day {
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .calendar-day:hover {
+        background: #f0f0f0;
+      }
+
+      .calendar-day.active {
+        background: var(--primary);
+        color: white;
+      }
+
+      .calendar-day.completed {
+        background: var(--success);
+        color: white;
+        position: relative;
+      }
+
+      .calendar-day.completed:after {
+        content: "🔥";
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        font-size: 12px;
+      }
+
+      .calendar-day.empty {
+        background: transparent;
+        cursor: default;
+      }
+
+      /* Task Manager */
+      .task-manager {
+        margin-top: 2rem;
+      }
+
+      .task-list {
+        margin-top: 1rem;
+      }
+
+      .task-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background: white;
+        border-radius: 5px;
+        margin-bottom: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .task-checkbox {
+        margin-right: 1rem;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+      }
+
+      .task-text {
+        flex: 1;
+      }
+
+      .task-text.completed {
+        text-decoration: line-through;
+        color: #999;
+      }
+
+      .task-delete {
+        background: none;
+        border: none;
+        color: var(--danger);
+        cursor: pointer;
+        font-size: 1.2rem;
+      }
+
+      .materials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+
+      .material-category {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      .material-category h3 {
+        color: var(--primary);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--secondary);
+      }
+
+      .material-list {
+        list-style-type: none;
+      }
+
+      .material-list li {
+        margin-bottom: 0.8rem;
+        position: relative;
+        padding-left: 1.5rem;
+      }
+
+      .material-list li:before {
+        content: "→";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+      }
+
+      .material-list a {
+        color: var(--dark);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-block;
+        padding: 0.2rem 0;
+      }
+
+      .material-list a:hover {
+        color: var(--primary);
+        transform: translateX(5px);
+      }
+
+      @media (max-width: 768px) {
+        .materials-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .schedule-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .ingredient-list {
+          columns: 1;
+        }
+
+        .food-grid {
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>SENTINEL</h1>
+        <p class="subtitle">Explore • Plan • Learn • Work • Action • Track</p>
+      </header>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="daily">Daily Routine</button>
+        <button class="tab-btn" data-tab="health">Health & Wellness</button>
+        <button class="tab-btn" data-tab="food">Nutrition</button>
+        <button class="tab-btn" data-tab="materials">Materials Center</button>
+        <button class="tab-btn" data-tab="notes">Project Notes</button>
+        <button class="tab-btn" data-tab="tasks">Task Manager</button>
+        <button class="tab-btn" data-tab="calendar">Progress Calendar</button>
+      </div>
+
+      <div id="daily" class="tab-content active">
+        <h2>Daily Schedule</h2>
+        <div class="schedule-grid">
+          <div class="time-card" data-activity="exercise">
+            <button class="complete-btn">✓</button>
+            <div class="time-range">6:00 - 6:45</div>
+            <div class="activity">Exercise + Yoga + Body Stretch</div>
+          </div>
+
+          <div class="time-card" data-activity="morning-snack">
+            <button class="complete-btn">✓</button>
+            <div class="time-range">6:45 - 7:00</div>
+            <div class="activity">Honey Water + Morning Snack</div>
+          </div>
+
+          <div class="time-card" data-activity="morning-routine">
+            <button class="complete-btn">✓</button>
+            <div class="time-range">7:00 - 7:30</div>
+            <div class="activity">
+              Wash + Ready + Serum<br />(Mon, Wed, Sat: Headbath)
+            </div>
+          </div>
+
+          <div class="time-card" data-activity="breakfast">
+            <button class="complete-btn">✓</button>
+            <div class="time-range">7:30 - 9:00</div>
+            <div class="activity">Relax + Breakfast (Almonds, Walnut)</div>
+          </div>
+
+          <div class="time-card" data-activity="study-morning">
+            <button class="complete-btn">✓</button>
+            <div class="time-range">9:00 - 12:00</div>
+            <div class="activity">
+              Aptitude (1.5h) + Technical (1.5h)<br />(Aptitude Day 1-7, YouTube
+              Videos)
+            </div>
+          </div>
+
+          <div class="time-card" data-activity="team-check-1">
+            <button class="complete-btn">✓</button>
+            <div class="time-range">12:00 - 1:00</div>
+            <div class="activity">Work with Team (Check WhatsApp)</div>
+          </div>
+
+          <div class="time-card" data-activity="lunch">
+            <button class="complete-btn">✓</button>
+            <div class="time-range">1:00 - 2:00</div>
+            <div class="activity">Lunch + Break</div>
+          </div>
+
+          <div class="time-card" data-activity="class">
+            <button class="complete-btn">✓</button>
+            <div class="time-range">2:00 - 7:00</div>
+            <div class="activity">Class</div>
+          </div>
+
+          <div class="time-card" data-activity="evening-break">
+            <button class="complete-btn">✓</button>
+            <div class="time-range">7:00 - 7:30</div>
+            <div class="activity">Break</div>
+          </div>
+
+          <div class="time-card" data-activity="team-check-2">
+            <button class="complete-btn">✓</button>
+            <div class="time-range">7:30 - 8:00</div>
+            <div class="activity">Work with Team (Check WhatsApp)</div>
+          </div>
+
+          <div class="time-card" data-activity="coding">
+            <button class="complete-btn">✓</button>
+            <div class="time-range">8:00 - 10:00</div>
+            <div class="activity">
+              Coding Practice (Old + New Topics)<br />DP, Trees, LinkedList,
+              Backtracking, etc.
+            </div>
+          </div>
+
+          <div class="time-card" data-activity="sleep">
+            <button class="complete-btn">✓</button>
+            <div class="time-range">Before 11:00</div>
+            <div class="activity">Sleep</div>
+          </div>
+        </div>
+
+        <div
+          class="time-card"
+          style="
+            margin-top: 2rem;
+            background: #e3f2fd;
+            border-left-color: var(--info);
+          "
+        >
+          <div class="time-range">Sunday/Holidays</div>
+          <div class="activity">
+            <strong>Projects:</strong> Food Project Complete, Games Hub<br />
+            <strong>Other:</strong> Python Virtual Keyboard, Certificate
+            Compliance (Python Certificate)
+          </div>
+        </div>
+
+        <div class="progress-container">
+          <div class="progress-title">
+            <span>Daily Routine Completion</span>
+            <span id="completion-percent">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="completion-bar"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="health" class="tab-content">
+        <h2>Health & Wellness Routine</h2>
+
+        <div class="schedule-grid">
+          <div class="time-card" data-activity="yoga">
+            <button class="complete-btn">✓</button>
+            <div class="activity">Yoga & Exercise Daily</div>
+          </div>
+
+          <div class="time-card" data-activity="stretch">
+            <button class="complete-btn">✓</button>
+            <div class="activity">Free Body Stretch</div>
+          </div>
+
+          <div class="time-card" data-activity="manifest">
+            <button class="complete-btn">✓</button>
+            <div class="activity">Manifestation Practice</div>
+          </div>
+
+          <div class="time-card" data-activity="sun-walk">
+            <button class="complete-btn">✓</button>
+            <div class="activity">Sun Walk (Vitamin D)</div>
+          </div>
+        </div>
+
+        <div class="health-shake">
+          <h3>Health Shake Recipe</h3>
+          <div class="ingredient-list">
+            <div class="ingredient">
+              Milk (300 ml) - cow's milk or almond milk
+            </div>
+            <div class="ingredient">Soaked Almonds (6-8) - for brain, skin</div>
+            <div class="ingredient">Soaked Walnuts (2-3) - omega-3s</div>
+            <div class="ingredient">Soaked Raisins (10-15) - digestion</div>
+            <div class="ingredient">Soaked Dates (2) - iron, energy</div>
+            <div class="ingredient">Banana (1 medium) - potassium</div>
+            <div class="ingredient">Flax seeds (1 tsp) - hormones, hair</div>
+            <div class="ingredient">Chia seeds (1 tsp soaked) - omega-3s</div>
+            <div class="ingredient">Ashwagandha powder (½ tsp) - energy</div>
+            <div class="ingredient">
+              Turmeric + Black pepper - anti-inflammatory
+            </div>
+            <div class="ingredient">Honey (1 tsp) - immunity</div>
+            <div class="ingredient">Cocoa powder (1 tsp, optional)</div>
+          </div>
+          <p style="margin-top: 1rem; font-style: italic">
+            Blend all ingredients together until smooth.
+          </p>
+        </div>
+      </div>
+
+      <div id="materials" class="tab-content">
+        <h2>Materials Center</h2>
+
+        <div class="materials-grid">
+          <div class="material-category">
+            <h3>Coding & Technical</h3>
+            <ul class="material-list">
+              <li>
+                <a href="https://leetcode.com/problemset/" target="_blank"
+                  >LeetCode Problem Set</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://leetcode.com/studyplan/top-sql-50/"
+                  target="_blank"
+                  >Top SQL 50 Study Plan</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://leetcode.com/studyplan/programming-skills/"
+                  target="_blank"
+                  >Programming Skills Study Plan</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://www.geeksforgeeks.org/nation-skill-up/"
+                  target="_blank"
+                  >GeeksforGeeks Nation Skill Up</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://www.geeksforgeeks.org/courses/dsa-skill-up"
+                  target="_blank"
+                  >DSA Skill Up Course</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://unstop.com/practice/company-preparation/30-days-dsa-bootcamp/day-basics-of-arrays-37720/learn-about-arrays-37721"
+                  target="_blank"
+                  >Arrays Basics</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div class="material-category">
+            <h3>Aptitude</h3>
+            <ul class="material-list">
+              <li>
+                <a
+                  href="https://www.youtube.com/playlist?list=PLpyc33gOcbVA4qXMoQ5vmhefTruk5t9lt"
+                  target="_blank"
+                  >Aptitude YouTube Playlist 1</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://www.youtube.com/playlist?list=PLV8vIYTIdSnagdtD5NtQkQpHE9jXaJwUk"
+                  target="_blank"
+                  >Aptitude YouTube Playlist 2</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="material-category">
+            <h3>Techinical round preparation</h3>
+            <ul class="material-list">
+              <li>
+                <a
+                  href="https://www.tpointtech.com/java-tutorial"
+                  target="_blank"
+                  >Java Tutorial</a
+                >
+              </li>
+
+              <li>
+                <a
+                  href=https://www.geeksforgeeks.org/mysql/mysql-tutorial/
+                  target="_blank"
+                  >MySql Tutorial</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div class="material-category">
+            <h3>Health & Wellness</h3>
+            <ul class="material-list">
+              <li>
+                <a
+                  href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                  target="_blank"
+                  >Morning Yoga Routine</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://www.youtube.com/watch?v=oAPCPjnU1wA"
+                  target="_blank"
+                  >Healthy Recipes</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div class="material-category">
+            <h3>Project Resources</h3>
+            <ul class="material-list">
+              <li>
+                <a href="https://developer.mozilla.org/en-US/" target="_blank"
+                  >MDN Web Docs</a
+                >
+              </li>
+              <li>
+                <a href="https://stackoverflow.com/" target="_blank"
+                  >Stack Overflow</a
+                >
+              </li>
+              <li><a href="https://github.com/" target="_blank">GitHub</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div id="food" class="tab-content">
+        <h2>Nutrition Plan</h2>
+        <p style="margin-bottom: 1.5rem">
+          Healthy foods to include in your diet:
+        </p>
+
+        <div class="food-grid">
+          <div class="food-card">
+            <div class="food-emoji">🥚</div>
+            <div class="food-name">Eggs</div>
+          </div>
+
+          <div class="food-card">
+            <div class="food-emoji">🥬</div>
+            <div class="food-name">Spinach</div>
+          </div>
+
+          <div class="food-card">
+            <div class="food-emoji">🌰</div>
+            <div class="food-name">Nuts & Seeds</div>
+          </div>
+
+          <div class="food-card">
+            <div class="food-emoji">🫐</div>
+            <div class="food-name">Berries</div>
+          </div>
+
+          <div class="food-card">
+            <div class="food-emoji">🥑</div>
+            <div class="food-name">Butter Fruit</div>
+          </div>
+
+          <div class="food-card">
+            <div class="food-emoji">🍎</div>
+            <div class="food-name">Apple/Orange</div>
+          </div>
+
+          <div class="food-card">
+            <div class="food-emoji">🧃</div>
+            <div class="food-name">Fruit Juices</div>
+          </div>
+
+          <div class="food-card">
+            <div class="food-emoji">💧</div>
+            <div class="food-name">Water</div>
+          </div>
+        </div>
+
+        <div
+          class="time-card"
+          style="
+            margin-top: 2rem;
+            background: #ffebee;
+            border-left-color: var(--danger);
+          "
+        >
+          <div class="activity"><strong>Avoid:</strong> Sugar,Junk Food,Cool Drinks Etc..</div>
+        </div>
+      </div>
+
+      <div id="notes" class="tab-content">
+        <h2>Project Notes & Errors</h2>
+
+        <div class="notes-container">
+          <div class="note-form">
+            <h3>Add New Note</h3>
+            <form id="note-form">
+              <div class="form-group">
+                <label for="note-type">Note Type</label>
+                <select id="note-type" required>
+                  <option value="">Select type</option>
+                  <option value="idea">Project Idea</option>
+                  <option value="error">Error/Bug</option>
+                  <option value="learning">Learning</option>
+                  <option value="reminder">Reminder</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="note-title">Title</label>
+                <input type="text" id="note-title" required />
+              </div>
+              <div class="form-group">
+                <label for="note-content">Content</label>
+                <textarea id="note-content" required></textarea>
+              </div>
+              <button type="submit" class="btn">Save Note</button>
+            </form>
+          </div>
+
+          <div id="notes-list">
+            <!-- Notes will be added here dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <div id="tasks" class="tab-content">
+        <h2>Task Manager</h2>
+
+        <div class="task-manager">
+          <form id="task-form">
+            <div class="form-group">
+              <label for="task-input">Add New Task</label>
+              <div style="display: flex; gap: 10px">
+                <input
+                  type="text"
+                  id="task-input"
+                  placeholder="Enter task..."
+                  style="flex: 1"
+                />
+                <button type="submit" class="btn">Add</button>
+              </div>
+            </div>
+          </form>
+
+          <div class="task-list" id="task-list">
+            <!-- Tasks will be added here dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <div id="calendar" class="tab-content">
+        <h2>Progress Calendar</h2>
+
+        <div class="calendar">
+          <div class="calendar-header">
+            <h3 class="calendar-title" id="calendar-title">July 2023</h3>
+            <div class="calendar-nav">
+              <button id="prev-month">←</button>
+              <button id="next-month">→</button>
+            </div>
+          </div>
+
+          <div class="calendar-grid" id="calendar-days-header">
+            <div class="calendar-day-header">Sun</div>
+            <div class="calendar-day-header">Mon</div>
+            <div class="calendar-day-header">Tue</div>
+            <div class="calendar-day-header">Wed</div>
+            <div class="calendar-day-header">Thu</div>
+            <div class="calendar-day-header">Fri</div>
+            <div class="calendar-day-header">Sat</div>
+          </div>
+
+          <div class="calendar-grid" id="calendar-days">
+            <!-- Calendar days will be added here dynamically -->
+          </div>
+        </div>
+
+        <div style="margin-top: 2rem; text-align: center">
+          <p>🔥 indicates days you completed your full routine</p>
+          <div id="streak-counter" style="font-size: 1.2rem; margin-top: 1rem">
+            Current streak: <span id="current-streak">0</span> days
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Tab functionality
+        const tabBtns = document.querySelectorAll(".tab-btn");
+
+        tabBtns.forEach((btn) => {
+          btn.addEventListener("click", function () {
+            // Remove active class from all buttons and content
+            tabBtns.forEach((b) => b.classList.remove("active"));
+            document.querySelectorAll(".tab-content").forEach((content) => {
+              content.classList.remove("active");
+            });
+
+            // Add active class to clicked button and corresponding content
+            this.classList.add("active");
+            const tabId = this.getAttribute("data-tab");
+            document.getElementById(tabId).classList.add("active");
+
+            // If calendar tab is clicked, update it
+            if (tabId === "calendar") {
+              updateCalendar();
+            }
+          });
+        });
+
+        // Completion functionality for time cards
+        const completeBtns = document.querySelectorAll(".complete-btn");
+        completeBtns.forEach((btn) => {
+          btn.addEventListener("click", function () {
+            const card = this.closest(".time-card");
+            card.classList.toggle("completed");
+            updateCompletionPercentage();
+            saveCompletionState();
+          });
+        });
+
+        // Calculate and update completion percentage
+        function updateCompletionPercentage() {
+          const totalCards = document.querySelectorAll(".time-card").length;
+          const completedCards = document.querySelectorAll(
+            ".time-card.completed"
+          ).length;
+          const percentage = Math.round((completedCards / totalCards) * 100);
+
+          document.getElementById(
+            "completion-percent"
+          ).textContent = `${percentage}%`;
+          document.getElementById(
+            "completion-bar"
+          ).style.width = `${percentage}%`;
+        }
+
+        // Save completion state to localStorage
+        function saveCompletionState() {
+          const today = new Date().toDateString();
+          const completedActivities = [];
+
+          document.querySelectorAll(".time-card.completed").forEach((card) => {
+            completedActivities.push(card.getAttribute("data-activity"));
+          });
+
+          const completionData = {
+            date: today,
+            activities: completedActivities,
+            completed: completedActivities.length,
+          };
+
+          // Get existing data or initialize
+          let dailyData = JSON.parse(localStorage.getItem("dailyData")) || {};
+          dailyData[today] = completionData;
+
+          // Save back to localStorage
+          localStorage.setItem("dailyData", JSON.stringify(dailyData));
+
+          // Update streak counter
+          updateStreakCounter();
+        }
+
+        // Load completion state from localStorage
+        function loadCompletionState() {
+          const today = new Date().toDateString();
+          const dailyData = JSON.parse(localStorage.getItem("dailyData")) || {};
+
+          if (dailyData[today]) {
+            const completedActivities = dailyData[today].activities;
+
+            document.querySelectorAll(".time-card").forEach((card) => {
+              const activity = card.getAttribute("data-activity");
+              if (completedActivities.includes(activity)) {
+                card.classList.add("completed");
+              }
+            });
+
+            updateCompletionPercentage();
+          }
+        }
+        // Make all external links open in new tab
+        document.querySelectorAll(".material-list a").forEach((link) => {
+          link.setAttribute("target", "_blank");
+          link.setAttribute("rel", "noopener noreferrer");
+        });
+
+        // Notes functionality
+        const noteForm = document.getElementById("note-form");
+        const notesList = document.getElementById("notes-list");
+
+        noteForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const type = document.getElementById("note-type").value;
+          const title = document.getElementById("note-title").value;
+          const content = document.getElementById("note-content").value;
+
+          addNote(type, title, content);
+
+          // Reset form
+          noteForm.reset();
+        });
+
+        function addNote(type, title, content) {
+          const noteId = Date.now();
+          const now = new Date();
+          const dateStr =
+            now.toLocaleDateString() + " " + now.toLocaleTimeString();
+
+          const note = {
+            id: noteId,
+            type,
+            title,
+            content,
+            date: dateStr,
+          };
+
+          // Save to localStorage
+          saveNote(note);
+
+          // Add to DOM
+          renderNote(note);
+        }
+
+        function saveNote(note) {
+          let notes = JSON.parse(localStorage.getItem("notes")) || [];
+          notes.unshift(note); // Add new note to beginning
+          localStorage.setItem("notes", JSON.stringify(notes));
+        }
+
+        function renderNote(note) {
+          const noteCard = document.createElement("div");
+          noteCard.className = "note-card";
+          noteCard.innerHTML = `
+                    <div class="note-header">
+                        <span class="note-title">${note.title}</span>
+                        <span class="note-date">${note.date}</span>
+                    </div>
+                    <div class="note-content">${note.content.replace(
+                      /\n/g,
+                      "<br>"
+                    )}</div>
+                    <button class="note-delete" data-id="${
+                      note.id
+                    }">Delete</button>
+                `;
+
+          notesList.prepend(noteCard);
+
+          // Add delete event
+          noteCard
+            .querySelector(".note-delete")
+            .addEventListener("click", function () {
+              deleteNote(note.id);
+              noteCard.remove();
+            });
+        }
+
+        function loadNotes() {
+          const notes = JSON.parse(localStorage.getItem("notes")) || [];
+          notes.forEach((note) => renderNote(note));
+        }
+
+        function deleteNote(id) {
+          let notes = JSON.parse(localStorage.getItem("notes")) || [];
+          notes = notes.filter((note) => note.id !== id);
+          localStorage.setItem("notes", JSON.stringify(notes));
+        }
+
+        // Task Manager functionality
+        const taskForm = document.getElementById("task-form");
+        const taskList = document.getElementById("task-list");
+
+        taskForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const taskInput = document.getElementById("task-input");
+          const taskText = taskInput.value.trim();
+
+          if (taskText) {
+            addTask(taskText);
+            taskInput.value = "";
+          }
+        });
+
+        function addTask(text) {
+          const taskId = Date.now();
+          const task = {
+            id: taskId,
+            text,
+            completed: false,
+          };
+
+          // Save to localStorage
+          saveTask(task);
+
+          // Add to DOM
+          renderTask(task);
+        }
+
+        function saveTask(task) {
+          let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+          tasks.unshift(task);
+          localStorage.setItem("tasks", JSON.stringify(tasks));
+        }
+
+        function renderTask(task) {
+          const taskItem = document.createElement("div");
+          taskItem.className = "task-item";
+          taskItem.innerHTML = `
+                    <input type="checkbox" class="task-checkbox" ${
+                      task.completed ? "checked" : ""
+                    } data-id="${task.id}">
+                    <div class="task-text ${
+                      task.completed ? "completed" : ""
+                    }">${task.text}</div>
+                    <button class="task-delete" data-id="${task.id}">×</button>
+                `;
+
+          taskList.prepend(taskItem);
+
+          // Add event listeners
+          const checkbox = taskItem.querySelector(".task-checkbox");
+          const text = taskItem.querySelector(".task-text");
+          const deleteBtn = taskItem.querySelector(".task-delete");
+
+          checkbox.addEventListener("change", function () {
+            toggleTaskCompletion(task.id, this.checked);
+            text.classList.toggle("completed", this.checked);
+          });
+
+          deleteBtn.addEventListener("click", function () {
+            deleteTask(task.id);
+            taskItem.remove();
+          });
+        }
+
+        function loadTasks() {
+          const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+          tasks.forEach((task) => renderTask(task));
+        }
+
+        function toggleTaskCompletion(id, completed) {
+          let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+          tasks = tasks.map((task) => {
+            if (task.id === id) {
+              return { ...task, completed };
+            }
+            return task;
+          });
+          localStorage.setItem("tasks", JSON.stringify(tasks));
+        }
+
+        function deleteTask(id) {
+          let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+          tasks = tasks.filter((task) => task.id !== id);
+          localStorage.setItem("tasks", JSON.stringify(tasks));
+        }
+
+        // Calendar functionality
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+
+        document
+          .getElementById("prev-month")
+          .addEventListener("click", function () {
+            currentMonth--;
+            if (currentMonth < 0) {
+              currentMonth = 11;
+              currentYear--;
+            }
+            updateCalendar();
+          });
+
+        document
+          .getElementById("next-month")
+          .addEventListener("click", function () {
+            currentMonth++;
+            if (currentMonth > 11) {
+              currentMonth = 0;
+              currentYear++;
+            }
+            updateCalendar();
+          });
+
+        function updateCalendar() {
+          const calendarDays = document.getElementById("calendar-days");
+          calendarDays.innerHTML = "";
+
+          const firstDay = new Date(currentYear, currentMonth, 1);
+          const lastDay = new Date(currentYear, currentMonth + 1, 0);
+          const daysInMonth = lastDay.getDate();
+          const startingDay = firstDay.getDay();
+
+          // Set calendar title
+          const monthNames = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+          ];
+          document.getElementById(
+            "calendar-title"
+          ).textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+          // Add empty cells for days before the first day of the month
+          for (let i = 0; i < startingDay; i++) {
+            const emptyDay = document.createElement("div");
+            emptyDay.className = "calendar-day empty";
+            calendarDays.appendChild(emptyDay);
+          }
+
+          // Add days of the month
+          const dailyData = JSON.parse(localStorage.getItem("dailyData")) || {};
+
+          for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(currentYear, currentMonth, day);
+            const dateStr = date.toDateString();
+            const dayElement = document.createElement("div");
+            dayElement.className = "calendar-day";
+            dayElement.textContent = day;
+
+            // Check if this day has completion data
+            if (dailyData[dateStr]) {
+              const totalCards = document.querySelectorAll(".time-card").length;
+              if (dailyData[dateStr].completed >= totalCards * 0.8) {
+                // 80% completion
+                dayElement.classList.add("completed");
+              }
+            }
+
+            // Highlight today
+            const today = new Date();
+            if (
+              date.getDate() === today.getDate() &&
+              date.getMonth() === today.getMonth() &&
+              date.getFullYear() === today.getFullYear()
+            ) {
+              dayElement.classList.add("active");
+            }
+
+            calendarDays.appendChild(dayElement);
+          }
+        }
+
+        // Streak counter functionality
+        function updateStreakCounter() {
+          const dailyData = JSON.parse(localStorage.getItem("dailyData")) || {};
+          const dates = Object.keys(dailyData).sort().reverse(); // Most recent first
+
+          let streak = 0;
+          const today = new Date();
+          const yesterday = new Date(today);
+          yesterday.setDate(yesterday.getDate() - 1);
+
+          // Check if today is completed
+          const todayStr = today.toDateString();
+          const totalCards = document.querySelectorAll(".time-card").length;
+
+          // Calculate streak
+          let currentDate = new Date();
+          let keepChecking = true;
+
+          while (keepChecking) {
+            const dateStr = currentDate.toDateString();
+
+            if (
+              dailyData[dateStr] &&
+              dailyData[dateStr].completed >= totalCards * 0.8
+            ) {
+              streak++;
+              currentDate.setDate(currentDate.getDate() - 1);
+            } else {
+              keepChecking = false;
+            }
+          }
+
+          document.getElementById("current-streak").textContent = streak;
+        }
+
+        // Initialize the app
+        function init() {
+          loadCompletionState();
+          loadNotes();
+          loadTasks();
+          updateCalendar();
+          updateStreakCounter();
+        }
+
+        init();
+      });
+    </script>
+  </body>
+</html>
