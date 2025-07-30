@@ -27,7 +27,7 @@
       body {
         background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         min-height: 100vh;
-        padding: 2rem;
+        padding: 1rem;
         color: var(--dark);
       }
 
@@ -40,6 +40,9 @@
         text-align: center;
         margin-bottom: 2rem;
         animation: fadeIn 1s ease-out;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
       }
 
       h1 {
@@ -53,6 +56,16 @@
         font-size: 1.2rem;
         color: var(--dark);
         opacity: 0.8;
+      }
+
+      /* Mobile menu button */
+      .menu-btn {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--primary);
       }
 
       .tabs {
@@ -106,7 +119,7 @@
         display: none;
         background: white;
         border-radius: 15px;
-        padding: 2rem;
+        padding: 1.5rem;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         animation: fadeIn 0.5s ease-out;
         margin-bottom: 2rem;
@@ -560,23 +573,93 @@
         transform: translateX(5px);
       }
 
+      /* Mobile Menu */
+      .mobile-menu {
+        display: none;
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 70%;
+        height: 100%;
+        background: white;
+        z-index: 1000;
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        padding: 2rem;
+        overflow-y: auto;
+      }
+
+      .mobile-menu.active {
+        transform: translateX(0);
+      }
+
+      .mobile-menu .tab-btn {
+        display: block;
+        width: 100%;
+        margin: 0.5rem 0;
+        text-align: left;
+        border-radius: 5px;
+      }
+
+      .close-menu {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--primary);
+      }
+
+      .profile-section {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #eee;
+        text-align: center;
+      }
+
+      .profile-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 1rem;
+        border: 3px solid var(--primary);
+      }
+
+      .profile-name {
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+      }
+
+      .profile-email {
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+      }
+
+      .overlay.active {
+        display: block;
+      }
+
       @media (max-width: 768px) {
         .materials-grid {
           grid-template-columns: 1fr;
         }
-      }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
 
-      @media (max-width: 768px) {
         .schedule-grid {
           grid-template-columns: 1fr;
         }
@@ -588,16 +671,88 @@
         .food-grid {
           grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         }
+
+        .menu-btn {
+          display: block;
+        }
+
+        .tabs {
+          display: none;
+        }
+
+        .mobile-menu {
+          display: block;
+        }
+
+        .calendar-grid {
+          grid-template-columns: repeat(7, minmax(30px, 1fr));
+        }
+
+        .calendar-day {
+          font-size: 0.8rem;
+          padding: 0.2rem;
+        }
+
+        .calendar-day-header {
+          font-size: 0.8rem;
+          padding: 0.2rem;
+        }
+
+        .tab-content {
+          padding: 1rem;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+
+        .subtitle {
+          font-size: 1rem;
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
     </style>
   </head>
   <body>
     <div class="container">
       <header>
-        <h1>SENTINEL</h1>
-        <p class="subtitle">Explore • Plan • Learn • Work • Action • Track</p>
+        <div>
+          <h1>SENTINEL</h1>
+          <p class="subtitle">Explore • Plan • Learn • Work • Action • Track</p>
+        </div>
+        <button class="menu-btn" id="menu-btn">☰</button>
       </header>
 
+      <!-- Mobile Menu -->
+      <div class="overlay" id="overlay"></div>
+      <div class="mobile-menu" id="mobile-menu">
+        <button class="close-menu" id="close-menu">×</button>
+        <button class="tab-btn active" data-tab="daily">Daily Routine</button>
+        <button class="tab-btn" data-tab="health">Health & Wellness</button>
+        <button class="tab-btn" data-tab="food">Nutrition</button>
+        <button class="tab-btn" data-tab="materials">Materials Center</button>
+        <button class="tab-btn" data-tab="notes">Project Notes</button>
+        <button class="tab-btn" data-tab="tasks">Task Manager</button>
+        <button class="tab-btn" data-tab="calendar">Progress Calendar</button>
+        
+        <div class="profile-section">
+          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" class="profile-image">
+          <div class="profile-name">John Doe</div>
+          <div class="profile-email">john.doe@example.com</div>
+        </div>
+      </div>
+
+      <!-- Desktop Tabs (hidden on mobile) -->
       <div class="tabs">
         <button class="tab-btn active" data-tab="daily">Daily Routine</button>
         <button class="tab-btn" data-tab="health">Health & Wellness</button>
@@ -1056,6 +1211,27 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
+        // Mobile menu functionality
+        const menuBtn = document.getElementById('menu-btn');
+        const closeMenuBtn = document.getElementById('close-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const overlay = document.getElementById('overlay');
+        
+        menuBtn.addEventListener('click', function() {
+          mobileMenu.classList.add('active');
+          overlay.classList.add('active');
+        });
+        
+        closeMenuBtn.addEventListener('click', function() {
+          mobileMenu.classList.remove('active');
+          overlay.classList.remove('active');
+        });
+        
+        overlay.addEventListener('click', function() {
+          mobileMenu.classList.remove('active');
+          overlay.classList.remove('active');
+        });
+
         // Tab functionality
         const tabBtns = document.querySelectorAll(".tab-btn");
 
@@ -1076,6 +1252,10 @@
             if (tabId === "calendar") {
               updateCalendar();
             }
+            
+            // Close mobile menu if open
+            mobileMenu.classList.remove('active');
+            overlay.classList.remove('active');
           });
         });
 
