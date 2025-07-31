@@ -29,6 +29,15 @@
         min-height: 100vh;
         padding: 1rem;
         color: var(--dark);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1f1c2c, #928dab);
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+
       }
 
       .container {
@@ -802,6 +811,37 @@
           font-size: 1rem;
         }
       }
+      #content {
+            background-color: rgba(0, 0, 0, 0.75);
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            display: none;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
 
       @keyframes fadeIn {
         from {
@@ -834,8 +874,25 @@
         }
       }
     </style>
+    <script>
+        function askPassword() {
+            const correctPassword = "12345"; // Change this to your desired password
+            const userPassword = prompt("Enter the password to continue:");
+
+            if (userPassword === correctPassword) {
+                document.getElementById("content").style.display = "block";
+            } else {
+                alert("Incorrect password! Access denied.");
+                window.location.href = "https://www.google.com"; // Redirect on failure
+            }
+        }
+    </script>
   </head>
-  <body>
+  <body onload="askPassword()">
+     <div id="content">
+        <h1>🔐 Welcome to the Protected Page!</h1>
+        <p>This content is only visible after entering the correct password.</p>
+    </div>
     <!-- Welcome Message -->
     <div class="welcome-message" id="welcome-message">
       <h2>Welcome to Your Daily Planner!</h2>
