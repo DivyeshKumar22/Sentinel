@@ -834,7 +834,7 @@
         .password-input {
             width: 100%;
             padding: 12px;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             border: none;
             border-radius: 5px;
             background: rgba(255, 255, 255, 0.1);
@@ -848,6 +848,17 @@
         .password-input:focus {
             border-color: #4cc9f0;
             background: rgba(255, 255, 255, 0.2);
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            justify-content: center;
+        }
+
+        .remember-me input {
+            margin-right: 8px;
         }
 
         .submit-btn {
@@ -907,14 +918,33 @@
     </style>
     <script>
         const correctPassword = "12345"; // Change this to your desired password
+        const cookieName = "passwordAuth";
+        const cookieExpiryDays = 1; // Cookie expires in 1 day
+
+        // Check if valid cookie exists when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            if (checkAuthCookie()) {
+                // If valid cookie exists, show content immediately
+                document.getElementById('passwordModal').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+            } else {
+                // Otherwise show password prompt
+                document.getElementById('passwordModal').style.display = 'flex';
+            }
+        });
 
         function checkPassword() {
             const passwordInput = document.getElementById('passwordInput');
             const errorMessage = document.getElementById('errorMessage');
             const passwordModal = document.getElementById('passwordModal');
             const content = document.getElementById('content');
+            const rememberMe = document.getElementById('rememberMe').checked;
 
             if (passwordInput.value === correctPassword) {
+                if (rememberMe) {
+                    // Set cookie if "Remember me" is checked
+                    setAuthCookie();
+                }
                 passwordModal.style.display = 'none';
                 content.style.display = 'block';
             } else {
@@ -922,6 +952,26 @@
                 passwordInput.value = '';
                 passwordInput.focus();
             }
+        }
+
+        // Set authentication cookie
+        function setAuthCookie() {
+            const date = new Date();
+            date.setTime(date.getTime() + (cookieExpiryDays * 24 * 60 * 60 * 1000));
+            const expires = "expires=" + date.toUTCString();
+            document.cookie = cookieName + "=true;" + expires + ";path=/";
+        }
+
+        // Check for valid authentication cookie
+        function checkAuthCookie() {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(cookieName + "=")) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         // Allow pressing Enter key to submit
@@ -933,11 +983,16 @@
     </script>
   </head>
   <body>
-     <div class="password-modal" id="passwordModal">
+
+    <div class="password-modal" id="passwordModal">
         <div class="password-box">
             <h2>Secure Access Required</h2>
             <p>Please enter the password to continue:</p>
             <input type="password" class="password-input" id="passwordInput" placeholder="Enter password">
+            <div class="remember-me">
+                <input type="checkbox" id="rememberMe">
+                <label for="rememberMe">Remember me for 1 day</label>
+            </div>
             <button class="submit-btn" onclick="checkPassword()">Continue</button>
             <p class="error-message" id="errorMessage">Incorrect password. Please try again.</p>
         </div>
